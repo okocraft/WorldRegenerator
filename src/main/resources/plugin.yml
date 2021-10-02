@@ -1,0 +1,14 @@
+name: WorldRegenerator
+version: ${project.version}
+main: net.okocraft.worldregenerator.WorldRegeneratorPlugin
+author: LazyGon
+depend:
+  - "MultiverseCore"
+softdepend:
+  - "WorldEdit"
+  - "Chunky"
+  - "Dynmap"
+
+commands:
+  resourceworld:
+    description: Main command of this plugin.

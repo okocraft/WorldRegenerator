@@ -1,0 +1,95 @@
+#world-settings:
+#  worldname:
+#    # Delete world and recreate same name world with multiverse core.
+#    auto-regeneration:
+#      # In days, -1 .. inf, -1 means auto-regeneration is disabled.
+#      interval: 60
+#      # When this true, next regeneration date will be printed on screen on every server startup.
+#      print-regen-date: true
+#      # When this true, recreated world's spawn point will be set to this value.
+#      # If set to KEEP, keep previous spawn location.
+#      # If unset (or invalid value), it will be new spawn location.
+#      # Cannot use SPAWN_POINT.
+#      # last 2 numbers are pitch and yaw. If there are only 3 numbers, pitch and yaw are treated as 0.
+#      new-spawn-point: 0,0,0,0,0
+#    
+#    # After world creation, place base building on specified location.
+#    # Even if the world creation is not by this plugin, this task will be executed.
+#    # Base buildings should be defined in worldedit schem.
+#    base-building:
+#      # Should be defined in worldedit.
+#      schem: resource_base
+#      # x,y,z or SPAWN_POINT
+#      location: SPAWN_POINT
+#      # Ignores air blocks on pasting schem. 
+#      ignore-air: true
+#    
+#    # Generate everything in specified range when the base building is placed with chunky plugin.
+#    fill-on-world-creation:
+#      # From https://github.com/pop4959/Chunky/wiki/Shapes
+#      shape: square
+#      # The same syntax as base-building.world.location
+#      center: SPAWN_POINT
+#      # (-3000 ~ 3000)
+#      radius-x: 3000
+#      # (-3000 ~ 3000)
+#      radius-z: 3000
+#    
+#    # Set vanilla worldboarder after fill.
+#    set-world-boader-after-fill:
+#      # x,z or SPAWN_POINT
+#      center: 0,0
+#      # 6000 means -3000 ~ 3000 for this section (like vanilla worldboarder command).
+#      radius: 6000
+#    
+#    # After chunky auto regeneration, execute dynmap full render command after auto generation.
+#    fullrender-after-fill: true
+world-settings:
+  resource:
+    auto-regeneration:
+      interval: 60
+      print-regen-date: true
+      new-spawn-point: null
+    base-building:
+      schem: resource_base
+      ignore-air: true
+      location: SPAWN_POINT
+    fill-on-world-creation:
+      shape: square
+      center: SPAWN_POINT
+      radius-x: 3000
+      radius-z: 3000
+    set-world-boader-after-fill:
+      center: SPAWN_POINT
+      radius: 6000
+    fullrender-after-fill: true
+
+  resource_nether:
+    auto-regeneration:
+      interval: 60
+      print-regen-date: true
+      new-spawn-point: null
+    fill-on-world-creation:
+      shape: square
+      center: SPAWN_POINT
+      radius-x: 3000
+      radius-z: 3000
+    set-world-boader-after-fill:
+      center: SPAWN_POINT
+      radius: 6000
+    fullrender-after-fill: true
+
+  resource_the_end:
+    auto-regeneration:
+      interval: 60
+      print-regen-date: true
+      new-spawn-point: null
+    fill-on-world-creation:
+      shape: square
+      center: SPAWN_POINT
+      radius-x: 3000
+      radius-z: 3000
+    set-world-boader-after-fill:
+      center: SPAWN_POINT
+      radius: 6000
+    fullrender-after-fill: true
