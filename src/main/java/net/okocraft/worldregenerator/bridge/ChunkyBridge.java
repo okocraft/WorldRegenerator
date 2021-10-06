@@ -12,12 +12,18 @@ import org.popcraft.chunky.util.Formatting;
 import org.popcraft.chunky.util.Limit;
 
 import net.okocraft.worldregenerator.WorldRegeneratorPlugin;
+import net.okocraft.worldregenerator.config.Config;
 
 import static org.popcraft.chunky.util.Translator.translate;
 
+import java.io.IOException;
+import java.nio.file.Files;
+import java.nio.file.Path;
+import java.nio.file.StandardCopyOption;
 import java.util.HashMap;
 import java.util.Locale;
 import java.util.Map;
+import java.util.Map.Entry;
 
 import org.bukkit.Location;
 
@@ -37,10 +43,8 @@ public class ChunkyBridge {
             if (generationTasks.size() != chunky.getGenerationTasks().size()) {
                 generationTasks.keySet().removeAll(chunky.getGenerationTasks().keySet());
 
-                for (World world : generationTasks.keySet()) {
-                    if (plugin.getConfigManager().getMainConfig().shouldFullRenderOnComplete(plugin.getServer().getWorld(world.getUUID()))) {
-                        plugin.getServer().dispatchCommand(plugin.getServer().getConsoleSender(), "dynmap fullrender " + world.getName());
-                    }
+                for (World tempWorld : generationTasks.keySet()) {
+                    afterFill(plugin.getServer().getWorld(tempWorld.getName().replaceAll("__(\\w+)_temp__", "$1")), tempWorld.getName());
                 }
 
                 generationTasks.clear();
@@ -78,6 +82,52 @@ public class ChunkyBridge {
         } else {
             startAction.run();
         }
+    }
+
+    public void afterFill(org.bukkit.World world, String tempName) {
+        Config config = plugin.getConfigManager().getMainConfig();
+        MultiverseCoreBridge mv = plugin.getBridgeManager().getMultiverseCoreBridge();
+        String worldName = world.getName();
+        
+        // ベース建築のスケマティクを設置
+        plugin.getBridgeManager().getWorldeditBridge().pasteBase(world);
+
+        // 指定した生成後コマンドを実行
+        for (String command : config.getFillAfterCommands(world)) {
+            plugin.getServer().dispatchCommand(plugin.getServer().getConsoleSender(), command);
+        }
+
+        // 元のワールドのzip化
+        if (config.shouldAutoRegenerationArchive(world)) {
+            mv.zipWorld(worldName);
+        }
+
+        // 元のワールドの削除、新しいワールドへの置き換え
+        if (config.isAutoRegenerationNewUid(world)) {
+            mv.renameWorld(tempName, worldName);
+        } else {
+            try {
+                Path uidFile = plugin.getServer().getWorld(worldName).getWorldFolder().toPath().resolve("uid.dat");
+                Path copyUidFile = plugin.getServer().getWorld(tempName).getWorldFolder().toPath().resolve("uid.dat_copy");
+                Files.copy(uidFile, copyUidFile, StandardCopyOption.ATOMIC_MOVE, StandardCopyOption.COPY_ATTRIBUTES,
+                        StandardCopyOption.REPLACE_EXISTING);
+                mv.renameWorld(tempName, worldName);
+                mv.unloadWorld(worldName);
+                Files.copy(copyUidFile, uidFile, StandardCopyOption.ATOMIC_MOVE, StandardCopyOption.COPY_ATTRIBUTES,
+                        StandardCopyOption.REPLACE_EXISTING);
+                Files.deleteIfExists(copyUidFile);
+                mv.loadWorld(tempName);
+            } catch (IOException e) {
+                e.printStackTrace();
+                return;
+            }
+        }
+
+        // 新しいワールドにワールドボーダーを設定
+        world = plugin.getServer().getWorld(worldName);
+        Entry<Integer, Integer> center = config.getWorldBoaderCenter(world);
+        world.getWorldBorder().setCenter(center.getKey(), center.getValue());
+        world.getWorldBorder().setSize(config.getWorldBoaderRadius(world));
     }
 
     public enum Shape {

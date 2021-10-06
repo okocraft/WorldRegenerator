@@ -2,16 +2,20 @@
 #  worldname:
 #    # Delete world and recreate same name world with multiverse core.
 #    auto-regeneration:
-#      # In days, -1 .. inf, -1 means auto-regeneration is disabled.
-#      interval: 60
-#      # When this true, next regeneration date will be printed on screen on every server startup.
-#      print-regen-date: true
+#      # Requires cron fomula. See: https://www.quartz-scheduler.org/documentation/quartz-2.3.0/tutorials/crontrigger.html
+#      schedule: "0 0 20 1 * ?" # at 20:00 every first day of month. 
 #      # When this true, recreated world's spawn point will be set to this value.
 #      # If set to KEEP, keep previous spawn location.
 #      # If unset (or invalid value), it will be new spawn location.
 #      # Cannot use SPAWN_POINT.
 #      # last 2 numbers are pitch and yaw. If there are only 3 numbers, pitch and yaw are treated as 0.
 #      new-spawn-point: 0,0,0,0,0
+#      # Change uid of the world on auto regeneration.
+#      new-uid: true
+#      # Change seed of the world on auto regeneration.
+#      new-seed: true
+#      # Archive replaced world in zip.
+#      archive-old-world: true
 #    
 #    # After world creation, place base building on specified location.
 #    # Even if the world creation is not by this plugin, this task will be executed.
@@ -47,14 +51,19 @@
 world-settings:
   resource:
     auto-regeneration:
-      interval: 60
-      print-regen-date: true
+      schedule: "0 0 20 1 * ?"
       new-spawn-point: null
+      new-uid: true
+      new-seed: true
+      archive-old-world: true
     base-building:
       schem: resource_base
       ignore-air: true
       location: SPAWN_POINT
     fill-on-world-creation:
+      before-commands: []
+      after-commands:
+        - "dynmap fullrender resource"
       shape: square
       center: SPAWN_POINT
       radius-x: 3000
@@ -66,10 +75,15 @@ world-settings:
 
   resource_nether:
     auto-regeneration:
-      interval: 60
-      print-regen-date: true
+      schedule: "1 0 20 1 * ?"
       new-spawn-point: null
+      new-uid: true
+      new-seed: true
+      archive-old-world: true
     fill-on-world-creation:
+      before-commands: []
+      after-commands:
+        - "dynmap fullrender resource_nether"
       shape: square
       center: SPAWN_POINT
       radius-x: 3000
@@ -81,10 +95,15 @@ world-settings:
 
   resource_the_end:
     auto-regeneration:
-      interval: 60
-      print-regen-date: true
+      schedule: "2 0 20 1 * ?"
       new-spawn-point: null
+      new-uid: true
+      new-seed: true
+      archive-old-world: true
     fill-on-world-creation:
+      before-commands: []
+      after-commands:
+        - "dynmap fullrender resource_the_end"
       shape: square
       center: SPAWN_POINT
       radius-x: 3000

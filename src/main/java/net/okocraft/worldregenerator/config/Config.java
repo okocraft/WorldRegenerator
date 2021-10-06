@@ -1,5 +1,6 @@
 package net.okocraft.worldregenerator.config;
 
+import java.util.List;
 import java.util.Map;
 import java.util.Map.Entry;
 
@@ -17,16 +18,20 @@ public class Config extends CustomConfig {
         super(plugin, "config.yml");
     }
 
-    public int getAutoRegenerationInterval(World world) {
-        return get().getInt("world-settings." + world.getName() + ".auto-regeneration.interval", -1);
+    public String getAutoRegenerationSchedule(World world) {
+        return get().getString("world-settings." + world.getName() + ".auto-regeneration.schedule", "0 0 20 1 * ?");
     }
 
-    public boolean shouldPrintAutoRegenerationDate(World world) {
-        if (getAutoRegenerationInterval(world) > 0) {
-            return get().getBoolean("world-settings." + world.getName() + ".auto-regeneration.print-regen-date", true);
-        } else {
-            return false;
-        }
+    public boolean isAutoRegenerationNewUid(World world) {
+        return get().getBoolean("world-settings." + world.getName() + ".auto-regeneration.new-uid", true);
+    }
+
+    public boolean isAutoRegenerationNewSeed(World world) {
+        return get().getBoolean("world-settings." + world.getName() + ".auto-regeneration.new-seed", true);
+    }
+
+    public boolean shouldAutoRegenerationArchive(World world) {
+        return get().getBoolean("world-settings." + world.getName() + ".auto-regeneration.archive-old-world", true);
     }
 
     @Nullable
@@ -88,6 +93,14 @@ public class Config extends CustomConfig {
     @Nullable
     public Location getBaseBuildingLocation(@NotNull World world) {
         return getLocation("world-settings." + world.getName() + ".base-building.location", world);
+    }
+
+    public List<String> getFillBeforeCommands(World world) {
+        return get().getStringList("world-settings." + world.getName() + ".fill-on-world-creation.before-commands");
+    }
+
+    public List<String> getFillAfterCommands(World world) {
+        return get().getStringList("world-settings." + world.getName() + ".fill-on-world-creation.after-commands");
     }
 
     @Nullable
